@@ -21,6 +21,7 @@
 		<script>_onload=[];</script>
 		<script src="js/menu.js"></script>
 		<script src="js/engine.js"></script>
+		<script src="js/runner.js"></script>
 		<script src="js/canvas.js"></script>
 		<script src="js/front_events.js"></script>
 	</head>
@@ -40,7 +41,10 @@
 		</div>
 		
 		<div class="menu center-menu" id="center_menu">
-			<canvas id="canvas" width="600" height="600"></canvas>
+			<canvas id="canvas" width="600" height="600" style="display: none;"></canvas>
+			<div id="select_file" style="display: block;">
+				<input type="button" value="example 1"/>
+			</div>
 		</div>
 
 		<div class="menu right-menu" id="right_menu"></div>

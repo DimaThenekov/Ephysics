@@ -9,48 +9,77 @@ var engine_info = (()=>{
 	};
 	
 	var in_shape = {
-		rectangle: (data, x,y) => {},
-		circle: (data, x,y) => {},
-		ring: (data, x,y) => {},
-	}
+		rectangle: (data, x, y) => {
+			const [x1, y1, width, height] = data;
+			if (x >= x1 && x <= x1 + width && y >= y1 && y <= y1 + height) {
+				return true;
+			} else {
+				return false;
+			}
+		},
+
+		circle: (data, x, y) => {
+			const [cx, cy, r] = data;
+			const distance = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+			if (distance <= r) {
+				return true;
+			} else {
+				return false;
+			}
+		},
+
+		ring: (data, x, y) => {
+			const [cx, cy, r1, r2] = data;
+			const distance = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+			if (distance <= r2 && distance >= r1) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+	};
 	
 	var entities = [
 		{
 			type: 'q', // Заряд
-			is_const: false, // позиция не изменяема
-			q: -8, // заряд в нКл
-			x: 0.2, y: 0, // в метрах
-			vx: 0, vy: 0.1, // Скорость объекта (м/c), у is_const==true всегда 0
+			is_const: true, // позиция не изменяема
+			q: 10000, // заряд в нКл
+			x: 5, y: 0, // в метрах
+			vx: 0, vy: 0, // Скорость объекта (м/c), у is_const==true всегда 0
 			m: 1, // масса в элементарных еденицах, у is_const==true не имет значения
 			in_conductor: false // внутри ли проводника, если да, то он не может от туда выйти
 		},
 		{
 			type: 'p', // Электрический проводник
-			shape: 'rectangle', // 'rectangle' || 'circle' || 'ring'
-			data: [0, 0, 10, 10, 0] // x, y, ширина, высота, угол (rectangle)
+			shape: 'ring', // 'rectangle' || 'circle' || 'ring'
+			data: [0, 0, 10, 20] // x, y, ширина, высота, угол (rectangle)
 			// data: [0, 0, 10] // x, y, r (circle)
-			// data: [0, 0, 10, 10, 0] // x, y, r1, r2 (ring)
+			// data: [0, 0, 10, 10] // x, y, r1, r2 (ring)
 		}
 	];
 	
-	[... new Array(400)].map((x,i)=>entities.push({
+	[... new Array(800)].map((x,i)=>{
+		var phi = Math.random()*3.1415*2;
+		var r = Math.random()*10+10;
+		entities.push({
 			type: 'q', // Заряд
 			is_const: false, // позиция не изменяема
-			q: -10, // заряд в нКл
-			x: i*0.5, y: 0, // в метрах
+			q: Math.random()>0.5?10:-10, // заряд в нКл
+			x: Math.cos(phi)*r, y: Math.sin(phi)*r, // в метрах
 			vx: 0, vy: 0, // Скорость объекта (м/c), у is_const==true всегда 0
 			m: 1, // масса в элементарных еденицах, у is_const==true не имет значения
 			in_conductor: false // внутри ли проводника, если да, то он не может от туда выйти
-		}));
-	[... new Array(400)].map((x,i)=>entities.push({
+		})
+	});
+	/*[... new Array(1)].map((x,i)=>entities.push({
 			type: 'q', // Заряд
-			is_const: false, // позиция не изменяема
-			q: 10, // заряд в нКл
-			x: i*0.5+0.1, y: 0.5, // в метрах
+			is_const: true, // позиция не изменяема
+			q: 10*1000, // заряд в нКл
+			x: 5, y: 0, // в метрах
 			vx: 0, vy: 0, // Скорость объекта (м/c), у is_const==true всегда 0
 			m: 1, // масса в элементарных еденицах, у is_const==true не имет значения
 			in_conductor: false // внутри ли проводника, если да, то он не может от туда выйти
-		}));
+		}));*/
 	
 	var feelds_in_line = 10;
 	var canvas_electric_field = [];
@@ -71,14 +100,20 @@ var engine_info = (()=>{
 		var step = Math.max(canvas.height,canvas.width)/feelds_in_line/state.size;
 		
 		canvas_electric_field = [];
-		for (var xi = 0; xi<=feelds_in_line; xi++)
-			for (var yi = 0; yi<=feelds_in_line; yi++)
+		for (var yi = 0; yi<=feelds_in_line; yi++)
+			for (var xi = 0; xi<=feelds_in_line; xi++)
 				canvas_electric_field.push({x:Math.max(canvas.height,canvas.width)/feelds_in_line*xi,y:Math.max(canvas.height,canvas.width)/feelds_in_line*yi, feeld:get_electric_field(pos_x/state.size+xi*step,pos_y/state.size+yi*step)});
 	}
 	
-	function get_electric_field(x, y) { // поток вектора напряженности электрического поля
+	function get_electric_field(x, y) { 
+		// 	{
+		//		Ex: поток вектора напряженности электрического поля по x
+		//		Ey: поток вектора напряженности электрического поля по y
+		//		p: потенциал электрического поля
+		//	}
 		let total_e_x = 0;
 		let total_e_y = 0;
+		let total_p = 0;
 
 		// Рассчитываем общую силу, действующую на объект
 		entities.forEach((e,j) => {
@@ -88,22 +123,20 @@ var engine_info = (()=>{
 				var distance_squared = dx * dx + dy * dy;
 				if (!distance_squared) return;
 				const e_local = constants.eps * e.q * constants.e / distance_squared;
+				const p_local = constants.eps * e.q * constants.e / Math.sqrt(distance_squared);
 				
-				// Рассчитываем компоненты силы по осям
-				const force_x = e_local * dx / Math.sqrt(distance_squared);
-				const force_y = e_local * dy / Math.sqrt(distance_squared);
-
-				total_e_x += force_x;
-				total_e_y += force_y;
+				total_e_x += e_local * dx / Math.sqrt(distance_squared);
+				total_e_y += e_local * dy / Math.sqrt(distance_squared);
+				total_p += p_local;
 			}
 		});
-		return [total_e_x, total_e_y];
+		return {ex: total_e_x, ey: total_e_y, p: total_p};
 	}
 	
 	function engine_iteration(t) {
 		// Здесь будет основной код итерации движка, использующий параметр времени t
 		// Логика обновления положения объектов, расчета сил, энергии и прочего
-		
+		list_conductor = entities.filter(x=>x.type == 'p');
 		
 		entities.forEach((entity,i) => {
 			if (entity.type == 'q' && !entity.is_const) {
@@ -125,7 +158,6 @@ var engine_info = (()=>{
 
 						total_force_x += force_x;
 						total_force_y += force_y;
-						if (total_force_y != total_force_y) debugger;
 					}
 				});
 				// Рассчитываем ускорение на основе общей силы
@@ -134,14 +166,36 @@ var engine_info = (()=>{
 				
 				entity.vx += acceleration_x * t * constants.t;
 				entity.vy += acceleration_y * t * constants.t;
-			
-				
+				//while(Math.abs(entity.vx)>100) entity.vx /= 2;
+				//while(Math.abs(entity.vy)>100) entity.vy /= 2;
 			}
 		});
+		var tmp = [{x:1,y:1}, {x:0.5,y:0.5}, {x:0.25,y:0.25}, {x:0.125,y:0.125}, {x:0.001,y:0.001},
+					{x:0,y:1}, {x:1,y:0}, {x:0,y:1}, {x:1,y:0},
+					//{x:-0.0001,y:-0.0001}, {x:0.0001,y:-0.0001}, {x:-0.0001,y:0.0001},
+					{x:0,y:0}];
 		entities.forEach((entity,i) => {
 			if (entity.type == 'q' && !entity.is_const) {
-				entity.x += (entity.vx * t * constants.t)/constants.scale; // TODO check in_shape
-				entity.y += (entity.vy * t * constants.t)/constants.scale; // TODO check in_shape
+				var _in_shape = list_conductor.some(x=>in_shape[x.shape](x.data,entity.x,entity.y));
+				var new_in_shape=false;
+				var i = 0;
+				if (_in_shape) {
+					while (true) {
+						var nx = entity.x+tmp[i].x*(entity.vx * t * constants.t)/constants.scale;
+						var ny = entity.y+tmp[i].y*(entity.vy * t * constants.t)/constants.scale;
+						new_in_shape = list_conductor.some(x=>in_shape[x.shape](x.data,nx,ny));
+						if (new_in_shape) break;
+						if (i+1==tmp.length) break;
+						i++;
+					}
+				}
+				var dx = tmp[i].x*(entity.vx * t * constants.t)/constants.scale;
+				var dy = tmp[i].y*(entity.vy * t * constants.t)/constants.scale;
+				entity.x += dx;
+				entity.y += dy;
+				entity.vx=tmp[i].x*entity.vx;
+				entity.vy=tmp[i].y*entity.vy;
+				//if(Math.max(Math.abs(dx), Math.abs(dy))<=0.00001) { entity.vx = Math.max(Math.min(entity.vx,1),-1); entity.vy = Math.max(Math.min(entity.vy,1),-1);}
 			}
 		});
 		
@@ -152,7 +206,8 @@ var engine_info = (()=>{
 	return {
 		constants: constants,
 		run: engine_iteration,
-		entities: entities,
+		get_entities: ()=>entities,
+		set_entities: e=>{entities=e},
 		electric_field: get_electric_field,
 		change: change,
 		get_electric_field: ()=>canvas_electric_field,
