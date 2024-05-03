@@ -24,6 +24,7 @@
 		<script src="js/runner.js"></script>
 		<script src="js/canvas.js"></script>
 		<script src="js/front_events.js"></script>
+		<script src="js/right_menu.js"></script>
 	</head>
     <body onload="_onload.map(x=>x())">
 		<div class="menu top-menu" id="top_menu"></div>
@@ -42,9 +43,7 @@
 		
 		<div class="menu center-menu" id="center_menu">
 			<canvas id="canvas" width="600" height="600" style="display: none;"></canvas>
-			<div id="select_file" style="display: block;">
-				<input type="button" value="example 1"/>
-			</div>
+			<div id="select_file" style="display: none;"></div>
 		</div>
 
 		<div class="menu right-menu" id="right_menu"></div>
@@ -52,6 +51,7 @@
 		<div class="menu bottom-menu" id="bottom_menu">
 			<div id="transformed-mouse-pos"></div>
 			<div id="mouse-pos"></div>
+			<div id="fps"></div>
 		</div>
     </body>
 </html>

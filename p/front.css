@@ -9,6 +9,7 @@ html, body {
   color: #fff;
   background: #111;
   font-family: 'Open Sans', sans-serif;
+  overflow: hidden;
 }
 
 /* Стили для всех панелей */
@@ -208,3 +209,30 @@ html, body {
 }
 
 /* ================== */
+
+/* Стили для данных на нижней панели */
+
+.bottom-menu {
+	display: flex;
+}
+
+.bottom-menu > div {
+	border-left: 1px solid #fff;
+	font-size: 14px;
+	flex-shrink: 0;
+	padding: 0 5px 0 5px;
+}
+
+/* ================== */
+
+/* Стили для выбора скорости */
+
+#speed {
+	position: absolute;
+	margin: 8px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	color: #fff;
+	background: #0005;
+}

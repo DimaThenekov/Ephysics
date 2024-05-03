@@ -3,14 +3,36 @@ var menu_info = [
 		src: "images/cursor.png",
 		title: "Курсор",
 		html: '',
-		save_id: []
+		save_id: [],
+		canvas_click: (x,y)=>{
+			var px=1/canvas_events.get_canvas_state().size
+			var new_select = -1;
+			engine_info.get_entities().map((x,i)=>[x,i]).filter(e=>e[0].type == "q").map(e=>{
+				var r =  Math.sqrt((x-e[0].x)**2+(y-e[0].y)**2);
+				if (r<px*12) {
+					new_select = e[1];
+				}
+			});
+			if (new_select==-1)
+				engine_info.get_entities().map((x,i)=>[x,i]).filter(e=>e[0].type == "p").map(e=>{
+					if (engine_info.in_shape[e[0].shape](e[0].data, x,y)) {
+						new_select = e[1];
+					}
+				});
+			if (new_select<0 || new_select==canvas_events.selected_entity)
+				canvas_events.selected_entity = -1;
+			else
+				canvas_events.selected_entity = new_select;
+			canvas_events.need_repaint();
+			right_menu_h.update_entity();
+		}
 	},
-	{
+	/*{
 		src: "images/move.png",
 		title: "Переместить",
 		html: '',
 		save_id: []
-	},
+	},*/
 	{
 		src: "images/charge.png",
 		title: "Заряд +/-",
@@ -133,7 +155,8 @@ function select_menu_item(i) {
 	menu.selected = i;
 	
 	top_menu.innerHTML = 'Инструмент: ' +
-		'<img src="'+menu_info[i].src+'">'+menu_info[i].html.replace(/\|/g,'<div class="dline"></div>');
+		'<img src="'+menu_info[i].src+'">'+menu_info[i].html.replace(/\|/g,'<div class="dline"></div>')+
+		'<select id="speed" onchange="speed_change()">'+[0,0.25,0.5,1,2,3,4,5,10,25,50,75,100,250,500,750,1000,2500,5000,7500,10000,100000,100000].map(x=>x?'<option value="'+x+'"' +(x==runner.speed&&runner.running?' selected':'')+'>x'+x+'</option>':'<option value="0">стоп</option>')+'</select>';
 	
 	setTimeout(()=>{
 		menu_info[i].save_id.filter(x=>menu.value_of_save_id[x]!==undefined).map(x=>document.getElementById(x).value=menu.value_of_save_id[x]);
@@ -218,6 +241,8 @@ function import_init(s){
 }
 
 function import_templates(i) {
+	document.getElementById('speed').value = 0;
+	speed_change();
 	if (i==import_examples.length-1){
 		upload(s=>{
 			if(s) {
@@ -230,5 +255,18 @@ function import_templates(i) {
 			import_init(s);
 			select_menu_item(0);
 		});
+	}
+	
+	canvas_events.selected_entity = -1;
+	right_menu_h.update_entity();
+}
+
+function speed_change() {
+	var speed = document.getElementById('speed').value;
+	if (speed==0)
+		runner.stop();
+	else {
+		runner.speed=+speed;
+		runner.start();
 	}
 }

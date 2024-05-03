@@ -114,7 +114,12 @@ var canvas_events={
 			_.lineWidth = 2*px;
 			_.strokeStyle = "#000";
 			
-			engine_info.get_entities().filter(x=>x.type=='q').map(e=>{
+			engine_info.get_entities().map((x,i)=>[x,i]).filter(x=>x[0].type=='q').map(d=>{
+				var e=d[0]; var ind=d[1];
+				if (canvas_events.selected_entity==ind)
+					_.strokeStyle = "#fff";
+				else
+					_.strokeStyle = "#000";
 				if (e.q>=0)_.fillStyle = "#f00";
 				else _.fillStyle = "#00f";
 				

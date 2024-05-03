@@ -67,7 +67,7 @@ var engine_info = (()=>{
 			q: Math.random()>0.5?10:-10, // заряд в нКл
 			x: Math.cos(phi)*r, y: Math.sin(phi)*r, // в метрах
 			vx: 0, vy: 0, // Скорость объекта (м/c), у is_const==true всегда 0
-			m: 1, // масса в элементарных еденицах, у is_const==true не имет значения
+			m: 0.001, // масса в элементарных еденицах, у is_const==true не имет значения
 			in_conductor: false // внутри ли проводника, если да, то он не может от туда выйти
 		})
 	});
@@ -211,6 +211,7 @@ var engine_info = (()=>{
 		electric_field: get_electric_field,
 		change: change,
 		get_electric_field: ()=>canvas_electric_field,
-		get_feelds_in_line: ()=>feelds_in_line
+		get_feelds_in_line: ()=>feelds_in_line,
+		in_shape: in_shape
 	};
 })();
