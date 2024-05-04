@@ -180,6 +180,7 @@ _onload.push(() => {
         ctx.save();
         ctx.setTransform(1,0,0,1,0,0);
         ctx.clearRect(0,0,canvas.width,canvas.height);
+		if (canvas.height<10 || canvas.width<10) return;
 		canvas_events.on_draw_background.map(x=>x(ctx,canvas,state));
         ctx.restore();
 		canvas_events.on_draw.map(x=>x(ctx,canvas,state));
@@ -251,28 +252,29 @@ _onload.push(() => {
 			e.offsetX = (e.touches[0].clientX-x)/width*e.target.offsetWidth;
 			e.offsetY = (e.touches[0].clientY-y)/height*e.target.offsetHeight;
 			onMouseDown(e);
-		}, {passive: true});
+		}, {passive: false});
     canvas.addEventListener('touchmove', (e)=>{
 			const {x, y, width, height} = e.target.getBoundingClientRect();
 			e.offsetX = (e.touches[0].clientX-x)/width*e.target.offsetWidth;
 			e.offsetY = (e.touches[0].clientY-y)/height*e.target.offsetHeight;
 			onMouseMove(e);
-		}, {passive: true});
+		}, {passive: false});
     canvas.addEventListener('touchend', (e)=>{
 			const {x, y, width, height} = e.target.getBoundingClientRect();
 			e.offsetX = (e.changedTouches[0].clientX-x)/width*e.target.offsetWidth;
 			e.offsetY = (e.changedTouches[0].clientY-y)/height*e.target.offsetHeight;
 			onMouseUp(e);
-		}, {passive: true});
+		}, {passive: false});
     canvas.addEventListener('touchcancel', (e)=>{
 			const {x, y, width, height} = e.target.getBoundingClientRect();
 			e.offsetX = (e.changedTouches[0].clientX-x)/width*e.target.offsetWidth;
 			e.offsetY = (e.changedTouches[0].clientY-y)/height*e.target.offsetHeight;
 			onMouseUp(e);
-		}, {passive: true});
+		}, {passive: false});
 	
     canvas.addEventListener('wheel', onWheel, {passive: true});
 	canvas_events.need_repaint();
 	ctx.textBaseline = "middle";
 	ctx.textAlign = "center";
+	setTimeout(_=>{canvas_events.set_canvas_state({x:center_menu.clientWidth/2, y:center_menu.clientHeight/2, size:14})},200);
 });

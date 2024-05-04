@@ -236,3 +236,56 @@ html, body {
 	color: #fff;
 	background: #0005;
 }
+
+#speed option {
+  margin: 5px;
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+/* ================== */
+
+/* Стили для правой панели */
+
+.right-menu > div {
+  margin: 10px;
+  border: 1px solid #888;
+  padding: 10px;
+  border-radius: 10px;
+  line-height: 1.5;
+}
+
+.right-menu var {
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-style: normal;
+  border: 1px solid #888;
+  background: #0002;
+}
+
+.right-menu input, .right-menu select {
+  background: #0002;
+  color: #fff;
+  vertical-align: middle;
+  border-radius: 20px;
+  padding: 1px 5px;
+  max-width: calc(100% - 20px);
+}
+.right-menu select option {
+  margin: 5px;
+  background: rgba(0, 0, 0, 0.3);
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+.right-menu input:disabled {
+  background: #0005;
+}
+
+.right-menu input[type="button"] {
+  width: calc(100%);
+}
+
+.right-menu {
+	overflow: auto;
+}

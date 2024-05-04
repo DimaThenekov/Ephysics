@@ -36,6 +36,7 @@ var runner = {
 			runner.running = false;
 			runner.last_eval_time = 0;
 		}
+		right_menu_h.change_info();
 	},
 	speed: 1,
 	running: false,

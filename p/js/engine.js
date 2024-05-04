@@ -4,7 +4,7 @@ var engine_info = (()=>{
 		e: 1e-9,//1.602177e-19, /* Элементарный заряд в кулонах*/
 		eps: 8.9875517873681764e9, /* Электрическая постоянная в Н·м²/К² */
 		t: 1, /* Время симуляции для одной миллисекунды реального времени */
-		m: (9.1093837e-32)*1.602177e27, /* Масса покоя электрона в килограммах */
+		m: 1e-3, /* Масса покоя электрона в килограммах */
 		scale: 1, /* размер одного пикселя canvas */
 	};
 	
@@ -103,6 +103,7 @@ var engine_info = (()=>{
 		for (var yi = 0; yi<=feelds_in_line; yi++)
 			for (var xi = 0; xi<=feelds_in_line; xi++)
 				canvas_electric_field.push({x:Math.max(canvas.height,canvas.width)/feelds_in_line*xi,y:Math.max(canvas.height,canvas.width)/feelds_in_line*yi, feeld:get_electric_field(pos_x/state.size+xi*step,pos_y/state.size+yi*step)});
+		if (runner.running) right_menu_h.change_info(true);
 	}
 	
 	function get_electric_field(x, y) { 
