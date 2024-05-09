@@ -122,7 +122,7 @@ var engine_info = (()=>{
 				const dx = (e.x - x)*constants.scale;
 				const dy = (e.y - y)*constants.scale;
 				var distance_squared = dx * dx + dy * dy;
-				if (distance_squared<0.01) return;
+				if (distance_squared<0.001) return;
 				const e_local = constants.eps * e.q * constants.e / distance_squared;
 				const p_local = constants.eps * e.q * constants.e / Math.sqrt(distance_squared);
 				
@@ -150,7 +150,7 @@ var engine_info = (()=>{
 						const dx = (e.x - entity.x)*constants.scale;
 						const dy = (e.y - entity.y)*constants.scale;
 						var distance_squared = dx * dx + dy * dy;
-						if (!distance_squared) return;
+						if (distance_squared<0.01) return;
 						const force_magnitude = constants.eps * entity.q * e.q * (constants.e**2) / distance_squared;
 						
 						// Рассчитываем компоненты силы по осям
