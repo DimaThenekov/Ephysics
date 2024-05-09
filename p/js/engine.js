@@ -122,7 +122,7 @@ var engine_info = (()=>{
 				const dx = (e.x - x)*constants.scale;
 				const dy = (e.y - y)*constants.scale;
 				var distance_squared = dx * dx + dy * dy;
-				if (!distance_squared) return;
+				if (distance_squared<0.01) return;
 				const e_local = constants.eps * e.q * constants.e / distance_squared;
 				const p_local = constants.eps * e.q * constants.e / Math.sqrt(distance_squared);
 				
