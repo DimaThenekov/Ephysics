@@ -208,8 +208,11 @@ function upload(callback) {
 	f.click();
 }
 var import_examples = [
-	{file_name: "00001.ephy", "text": "example 1"},
-	{file_name: "e00002.ephy", "text": "example 2"},
+	{file_name: "adron.ephy", "text": "Адронный коллайдер"},
+	{file_name: "cond.ephy", "text": "Конденсатор"},
+	{file_name: "kek.ephy", "text": "Красота"},
+	{file_name: "ring1.ephy", "text": "Кольцо"},
+	{file_name: "ring2.ephy", "text": "Кольцо 2"},
 	{file_name: "", "text": "Из файла"}
 ];
 _onload.push(()=>{
